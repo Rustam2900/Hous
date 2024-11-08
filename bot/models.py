@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
+from bot.validators import phone_number_validator
 
 class User(models.Model):
     full_name = models.CharField(_("full name"), blank=True, max_length=255)

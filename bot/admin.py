@@ -1,5 +1,7 @@
 from django.contrib import admin
-from boto.db import User
+from modeltranslation.admin import TranslationAdmin
+
+from bot.models import User
 
 @admin.register(User)
 class UserUserAdmin(TranslationAdmin):
