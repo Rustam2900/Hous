@@ -22,3 +22,25 @@ def sync_save_user_language(user_id, user_lang):
 
 async def save_user_language(user_id, user_lang):
     await sync_save_user_language(user_id, user_lang)
+
+
+@sync_to_async
+def save_user_info_to_db(user_data):
+    try:
+        new_user, created = User.objects.update_or_create(
+            telegram_id=user_data['telegram_id'],
+            defaults={
+                "full_name": user_data['full_name'],
+                "phone_number": user_data['phone_number'],
+                "tg_username": user_data['tg_username'],
+                "username": user_data['username']
+            }
+        )
+        return new_user
+    except IntegrityError:
+        raise Exception("User already exists")
+
+def fix_phone(phone):
+    if "+" not in phone:
+        return f"+{phone}"
+    return phone
