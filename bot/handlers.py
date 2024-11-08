@@ -11,7 +11,7 @@ from aiogram.types import Message, CallbackQuery
 from bot.keyboards import get_languages, get_main_menu
 from bot.models import User
 from bot.utils import default_languages, introduction_template
-
+from bot.db import save_user_language
 
 
 
@@ -38,3 +38,17 @@ async def welcome(message: Message):
     else:
         msg = default_languages['welcome_message']
         await message.answer(msg, reply_markup=get_languages())
+
+@dp.callback_query(lambda call: call.data.startswith("lang"))
+async def get_query_languages(call: CallbackQuery, state: FSMContext):
+    user_id = call.from_user.id
+    user_lang = call.data.split("_")[1]
+    user_languages[user_id] = user_lang
+
+    await save_user_language(user_id, user_lang)
+
+    await bot.answer_callback_query(call.id)
+    await state.set_state(UserStates.name)
+
+    text = default_languages[user_lang]['full_name']
+    await call.message.answer(text, reply_markup=None)
