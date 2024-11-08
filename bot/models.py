@@ -16,8 +16,8 @@ class User(models.Model):
     county = models.CharField(_("county"), blank=True, null=True, max_length=100)
     room = models.CharField(_("room"), blank=True, null=True, max_length=50)
     zipcode = models.FloatField(max_length=20, null=True, blank=True)
-    min_sum = models.DecimalField(decimal_places=2, max_digits=10)
-    max_sum = models.DecimalField(decimal_places=2, max_digits=10)
+    min_sum = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
+    max_sum = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
 
     class Meta:
         verbose_name = _("User")
