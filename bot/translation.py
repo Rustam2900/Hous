@@ -4,7 +4,7 @@ from bot import models
 
 @register(models.User)
 class CustomUserTranslation(TranslationOptions):
-    fields = ('full_name', 'username', 'state', 'county', 'room')
+    fields = ('full_name', 'username', 'room')
 
 
 @register(models.State)
