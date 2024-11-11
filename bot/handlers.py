@@ -11,19 +11,14 @@ from aiogram.types import Message, CallbackQuery
 from bot.keyboards import get_languages, get_main_menu
 from bot.models import User
 from bot.utils import default_languages, introduction_template
-from bot.db import save_user_language,save_user_info_to_db, fix_phone
+from bot.db import save_user_language, save_user_info_to_db, fix_phone
 from bot.utils import user_languages
 from bot.states import UserStates
-
-
-
-
 
 dp = Dispatcher()
 bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 phone_number_validator = re.compile(r'^\+998 \d{2} \d{3} \d{2} \d{2}$')
-
 
 
 @dp.message(CommandStart())
@@ -40,6 +35,7 @@ async def welcome(message: Message):
     else:
         msg = default_languages['welcome_message']
         await message.answer(msg, reply_markup=get_languages())
+
 
 @dp.callback_query(lambda call: call.data.startswith("lang"))
 async def get_query_languages(call: CallbackQuery, state: FSMContext):

@@ -2,7 +2,6 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeybo
 from bot.utils import default_languages
 
 
-
 def get_languages(flag="lang"):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="ru 🇷🇺", callback_data=f"{flag}_ru"),
@@ -11,13 +10,11 @@ def get_languages(flag="lang"):
     return keyboard
 
 
-
 def get_main_menu(language):
-    main_menu_keyboard = ReplyKeyboardMarkup(keyboard=[
+    main_menu_keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [
-            KeyboardButton(text=default_languages[language]['categories'], ),
-            KeyboardButton(text=default_languages[language]['contact_us']),
-            KeyboardButton(text=default_languages[language]['my_orders'])
+            InlineKeyboardButton(text="For Sale", callback_data="sale"),
+            InlineKeyboardButton(text="For Rent", callback_data="rent")
         ]
-    ], resize_keyboard=True)
+    ])
     return main_menu_keyboard

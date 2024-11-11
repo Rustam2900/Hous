@@ -60,6 +60,7 @@ class House(models.Model):
     zipcode = models.FloatField(null=True, blank=True)
     county = models.ForeignKey(County, on_delete=models.CASCADE, related_name="houses")
     price = models.DecimalField(decimal_places=2, max_digits=10)
+    room = models.CharField(_("room"), blank=True, null=True, max_length=50)
     type = models.CharField(
         _("type"), max_length=4, choices=HouseType.choices, default=HouseType.FOR_RENT
     )

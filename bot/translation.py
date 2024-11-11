@@ -11,6 +11,7 @@ class CustomUserTranslation(TranslationOptions):
 class CustomStateTranslation(TranslationOptions):
     fields = ('name',)
 
+
 @register(models.County)
 class CustomCountyTranslation(TranslationOptions):
     fields = ('name',)
@@ -18,7 +19,7 @@ class CustomCountyTranslation(TranslationOptions):
 
 @register(models.House)
 class CustomHouseTranslation(TranslationOptions):
-    fields = ('title', 'description', 'type')
+    fields = ('title', 'description', 'type', 'room')
 
 
 @register(models.UserHouseSelection)
