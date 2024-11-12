@@ -22,6 +22,3 @@ class CustomHouseTranslation(TranslationOptions):
     fields = ('title', 'description', 'type', 'room')
 
 
-@register(models.UserHouseSelection)
-class CustomUserHouseSelectionTranslation(TranslationOptions):
-    fields = ('user', 'house')

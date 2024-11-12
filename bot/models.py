@@ -87,14 +87,3 @@ class HouseImage(models.Model):
         return f"Image for {self.house.title}"
 
 
-class UserHouseSelection(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="house_selections")
-    house = models.ForeignKey(House, on_delete=models.CASCADE, related_name="user_selections")
-    selected_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = _("User House Selection")
-        verbose_name_plural = _("User House Selections")
-
-    def __str__(self):
-        return f"{self.user.full_name} - {self.house.title}"

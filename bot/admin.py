@@ -1,7 +1,7 @@
 from django.contrib import admin
 from modeltranslation.admin import TranslationAdmin
 
-from bot.models import User, State, County, House, UserHouseSelection, HouseImage
+from bot.models import User, State, County, House, HouseImage
 
 
 @admin.register(User)
@@ -42,9 +42,3 @@ class HouseAdmin(TranslationAdmin):
     inlines = [HouseImageInline]
 
 
-@admin.register(UserHouseSelection)
-class UserHouseSelectionAdmin(TranslationAdmin):
-    list_display = ('id', 'user', 'house', 'selected_at')
-    list_display_links = ('id', 'user', 'house')
-    search_fields = ('user__full_name', 'house__title')
-    list_filter = ('selected_at', 'user', 'house')
