@@ -112,6 +112,22 @@ def create_or_update_user_country(telegram_id, county_id):
         return None, False
 
 
+@sync_to_async
+def get_users():
+    return list(User.objects.all())  # Replace with your actual query to fetch users
+
+
+# Your existing async function
+async def send_houses_to_users():
+    # Get users asynchronously
+    users = await get_users()
+
+    for user in users:
+        # Process each user (e.g., send house information to each user)
+        print(user)
+        # Add your logic here for sending houses to users
+
+
 def fix_phone(phone):
     if "+" not in phone:
         return f"+{phone}"
