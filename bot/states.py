@@ -8,5 +8,6 @@ class UserStates(StatesGroup):
 
 class UserHousStates(StatesGroup):
     room = State()
+    zipcode = State()
     min_sum = State()
     max_sum = State()

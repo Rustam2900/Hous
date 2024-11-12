@@ -57,6 +57,7 @@ def save_user_info_to_db_create(user_data):
             telegram_id=user_data['telegram_id'],
             defaults={
                 "room": user_data['room'],
+                "zipcode": user_data['zipcode'],
                 "min_sum": user_data['min_sum'],
                 "max_sum": user_data['max_sum']
             }

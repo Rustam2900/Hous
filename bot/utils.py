@@ -11,11 +11,14 @@ default_languages = {
                        "Выберите один из языков ниже!",
 
     "en": {
+        "filter": "filter the homes that suit you",
+        "zipcode": "zipcode",
         "min_sum_prompt": "Please enter the minimum amount (e.g., 2000$):",
         "max_sum_prompt": "Please enter the maximum amount (e.g., 5000$):",
         "invalid_room": "Invalid input. Please enter a valid number of rooms.",
         "invalid_sum": "Invalid input. Please enter a valid amount.",
-        "summary": "Summary:\nRooms: {room}\nMinimum sum: {min_sum}\nMaximum sum: {max_sum}",
+        "summary": "Summary:\n\nRooms: {room}\n\nzipcode: {zipcode}\n\n"
+                   "Minimum sum: {min_sum}\n\nMaximum sum: {max_sum}",
         "room_prompt": "Please enter the number of rooms:",
         "sorry": "Sorry, please try another number",
         "address": "address",
@@ -56,7 +59,10 @@ default_languages = {
     },
 
     "ru": {
-        "summary": "Сводка:\nКомнаты: {room}\nМинимальная сумма: {min_sum}\nМаксимальная сумма: {max_sum}",
+        "filter": "отфильтруйте дома, которые вам подходят",
+        "zipcode": "почтовый индекс",
+        "summary": "Сводка:\n\nКомнаты: {room}\n\nпочтовый индекс: {zipcode}"
+                   "\n\nМинимальная сумма: {min_sum}\n\nМаксимальная сумма: {max_sum}",
         "invalid_sum": "Недопустимый ввод. Введите допустимую сумму.",
         "invalid_room": "максимальная суммаНедопустимый ввод. Введите допустимое количество комнат.",
         "max_sum_prompt": "Пожалуйста, введите максимальную сумму (например, 5000$):",

@@ -4,11 +4,9 @@ from aiogram.client.default import DefaultBotProperties
 from django.conf import settings
 from aiogram.filters import CommandStart
 from aiogram.enums import ParseMode
-from aiogram import Dispatcher, F, Bot
+from aiogram import Dispatcher, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
-
-from asgiref.sync import sync_to_async
 
 from bot.keyboards import get_languages, get_main_menu
 from bot.models import User
@@ -159,7 +157,6 @@ async def handle_county_selection(call: CallbackQuery, state: FSMContext):
     user_lang = await get_user_language(user_id)
 
     county_id = int(call.data.split("_")[1])
-    print("###", county_id)
     user, created = await create_or_update_user_country(
         telegram_id=user_id,
         county_id=county_id
@@ -181,6 +178,24 @@ async def ask_min_sum(message: Message, state: FSMContext):
         return
 
     await state.update_data(room=room_count)
+
+    await state.set_state(UserHousStates.zipcode)
+    await message.answer(
+        default_languages[user_lang]['zipcode']
+    )
+
+
+@dp.message(UserHousStates.zipcode)
+async def ask_max_sum(message: Message, state: FSMContext):
+    user_lang = await get_user_language(message.from_user.id)
+    text = default_languages[user_lang]['room_prompt']
+    try:
+        zipcode = int(message.text)
+    except ValueError:
+        await message.answer(text=text)
+        return
+
+    await state.update_data(zipcode=zipcode)
 
     await state.set_state(UserHousStates.min_sum)
     await message.answer(
@@ -219,22 +234,32 @@ async def finish_registration(message: Message, state: FSMContext):
 
     await state.update_data(max_sum=max_sum)
     data = await state.get_data()
+    inline_kb = InlineKeyboardMarkup(row_width=1, inline_keyboard=[])
+    inline_buttons = []
+    inline_buttons.append(
+        InlineKeyboardButton(text=default_languages[user_lang]['filter'] or "no name",
+                             callback_data="filter"))
 
+    inline_kb.inline_keyboard = [inline_buttons[i:i + 1] for i in range(0, len(inline_buttons), 1)]
     await message.answer(
         default_languages[user_lang]['summary'].format(
             room=data['room'],
+            zipcode=data['zipcode'],
             min_sum=f"{data['min_sum']}$",
             max_sum=f"{data['max_sum']}$"
-        )
+        ),
+        reply_markup=inline_kb
     )
 
     state_data = await state.get_data()
     room = state_data.get('room')
+    zipcode = state_data.get('zipcode')
     min_sum = state_data.get('min_sum')
 
     user_data = {
         "telegram_id": user_id,
         "room": room,
+        "zipcode": zipcode,
         "min_sum": min_sum,
         "max_sum": max_sum
     }
