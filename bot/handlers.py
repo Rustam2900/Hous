@@ -7,9 +7,10 @@ from aiogram.enums import ParseMode
 from aiogram import Dispatcher, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
+from asgiref.sync import sync_to_async
 
 from bot.keyboards import get_languages, get_main_menu
-from bot.models import User
+from bot.models import User, House
 from bot.utils import default_languages, introduction_template
 from bot.db import (save_user_language, save_user_info_to_db, fix_phone,
                     get_user_language, state_get, county_get, create_or_update_user_state,
@@ -124,7 +125,7 @@ async def handle_products_by_category(call: CallbackQuery):
         inline_buttons.append(InlineKeyboardButton(text=state_name or "no name", callback_data=f"state_{state.id}"))
 
     inline_kb.inline_keyboard = [inline_buttons[i:i + 3] for i in range(0, len(inline_buttons), 3)]
-    await call.message.edit_text("Choose a state::", reply_markup=inline_kb)
+    await call.message.edit_text(default_languages[user_lang]['state_'], reply_markup=inline_kb)
 
 
 @dp.callback_query(lambda call: call.data.startswith("state_"))
@@ -144,7 +145,7 @@ async def handle_products_by_category(call: CallbackQuery):
             InlineKeyboardButton(text=country_name or "no name", callback_data=f"country_{county.id}"))
 
     inline_kb.inline_keyboard = [inline_buttons[i:i + 2] for i in range(0, len(inline_buttons), 2)]
-    await call.message.edit_text("Please select a county:", reply_markup=inline_kb)
+    await call.message.edit_text(default_languages[user_lang]['country'], reply_markup=inline_kb)
     user, created = await create_or_update_user_state(
         telegram_id=user_id,
         state_id=state_id
@@ -238,7 +239,7 @@ async def finish_registration(message: Message, state: FSMContext):
     inline_buttons = []
     inline_buttons.append(
         InlineKeyboardButton(text=default_languages[user_lang]['filter'] or "no name",
-                             callback_data="filter"))
+                             callback_data="filter_"))
 
     inline_kb.inline_keyboard = [inline_buttons[i:i + 1] for i in range(0, len(inline_buttons), 1)]
     await message.answer(
@@ -266,3 +267,42 @@ async def finish_registration(message: Message, state: FSMContext):
     await save_user_info_to_db_create(user_data)
 
     await state.clear()
+
+
+@dp.callback_query(lambda call: call.data.startswith("filter_"))
+async def handle_county_selection(call: CallbackQuery):
+    user_id = call.from_user.id
+    user_lang = await get_user_language(user_id)
+
+    try:
+        user = await sync_to_async(User.objects.get)(telegram_id=user_id)
+    except User.DoesNotExist:
+        await call.message.answer(default_languages[user_lang]['user_not'])
+        return
+
+    user_county = await sync_to_async(lambda: user.county)()
+
+    if not user_county:
+        await call.message.answer(default_languages[user_lang]['county_user_update'])
+        return
+
+    min_sum = user.min_sum if user.min_sum else 0
+    max_sum = user.max_sum if user.max_sum else float('inf')
+
+    houses = await sync_to_async(lambda: list(House.objects.filter(
+        county=user_county,
+        price__gte=min_sum,
+        price__lte=max_sum
+    )))()
+
+    if houses:
+        for house in houses:
+            house_details = (f"ID######: {house.id} \n\n"
+                             f"Title: {house.title}\n\n"
+                             f"Description: {house.description}\n\n"
+                             f"Zipcode: {house.zipcode}\n\n"
+                             f"Room: {house.room}\n\n"
+                             f"Price: ${house.price}\n\n")
+            await call.message.answer(house_details)
+    else:
+        await call.message.answer(default_languages[user_lang]['county_user_not'])

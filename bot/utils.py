@@ -11,6 +11,11 @@ default_languages = {
                        "Выберите один из языков ниже!",
 
     "en": {
+        "user_not": "User not found. Please register first.",
+        "county_user_not": "No houses available in your selected county within your budget.",
+        "county_user_update": "No county selected. Please update your profile with a county.",
+        "state_": "Choose a state:",
+        "country": "Please select a county:",
         "filter": "filter the homes that suit you",
         "zipcode": "zipcode",
         "min_sum_prompt": "Please enter the minimum amount (e.g., 2000$):",
@@ -59,6 +64,11 @@ default_languages = {
     },
 
     "ru": {
+        "user_not": "Пользователь не найден. Пожалуйста, зарегистрируйтесь сначала.",
+        "county_user_not": "В выбранном вами округе нет домов, соответствующих вашему бюджету.",
+        "county_user_update": "Округ не выбран. Пожалуйста, обновите свой профиль, указав округ.",
+        "state_": "Выберите штат:",
+        "country": "Пожалуйста, выберите округ:",
         "filter": "отфильтруйте дома, которые вам подходят",
         "zipcode": "почтовый индекс",
         "summary": "Сводка:\n\nКомнаты: {room}\n\nпочтовый индекс: {zipcode}"
@@ -112,60 +122,44 @@ local_user = {}
 introduction_template = {
     'ru':
         """
-    👕 Магазин Sneaker World <a href="https://t.me/sneaker_world_bot">Sneaker World</a> представляет!
+    🏠 HomeFinder Bot - Найти новый дом стало проще,
+     чем когда-либо, не выходя из дома!
 
-    Что может сделать бот?
+    🎯 Что можно сделать?
 
-    Заказ одежды
-    Информация о последних модных трендах
-    Проверка счетов
-    Будьте в курсе эксклюзивных скидок и акций
-    Вопросы и помощь
-    🌐 SneakerBot - легкий и быстрый сервис!
+    Искать дома для аренды или покупки
+    Выбирать дома, комнаты и цены, которые
+    соответствуют вашим предпочтениям
+    Получать информацию в реальном времени
+    о домах, которые подходят вашему бюджету
+    Получать уведомления о новых объявлениях и предложениях
+    ✨ HomeFinder Bot поможет вам найти идеальный дом!
+    🔔 Уведомления: Каждый раз, когда добавляется новое объявление,
+    бот отправит вам уведомление с лучшими предложениями.
 
-    🏠 Оставайтесь дома и пользуйтесь уникальными услугами!
-
-    🟢 Присоединяйтесь прямо сейчас: <a href="https://t.me/sneaker_world_bot">Sneaker World</a>
-    ✉️ Телеграм канал: <a href="https://t.me/sneaker_world_bot">Sneaker World</a>
-
-    Sneaker World - Ваш стиль!
+    🌐 Начните сейчас: <a href="https://t.me/SamItGlobalHousBot">HomeFinder Bot</a>
     """,
 
     "en":
 
         """
-    👕 Sneaker World shop <a href="https://t.me/sneaker_world_bot">Sneaker World</a> presents!
+    🏠 HomeFinder Bot - Finding a new home has never
+     been easier from the comfort of your own home!
 
-    What can the bot do?
+    🎯 What can you do?
 
-    Place clothing orders
-    Get information about the latest fashion trends
-    Check accounts
-    Stay informed about exclusive discounts and promotions
-    Questions and assistance
-    🌐 SneakerBot - an easy and quick service!
+    Search for houses to rent or buy
+    Choose homes, rooms, and prices that match
+    your preferences
+    Get real-time information on homes that fit your budget
+    Receive notifications about new listings and offers 
+    ✨ HomeFinder Bot helps you find the perfect home!
+    🔔 Notifications: Every time a new listing is added,
+     the bot will notify you with the best offers.
 
-    🏠 Stay at home and enjoy unique services!
-
-    🟢 Join now: <a href="https://t.me/sneaker_world_bot">Sneaker World</a>
-    ✉️ Telegram channel: <a href="https://t.me/sneaker_world_bot">Sneaker World</a>
-
-    Sneaker World - Your Style!
+    🌐 Start now: <a href="https://t.me/SamItGlobalHousBot">HomeFinder Bot</a>
 
     """
-}
-
-bot_description = """
-    👕 This bot is designed for you to order from the Sneaker World online store at any time from home and access various services. 👕
-
- - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-   👕Этот бот создан для того, чтобы вы могли заказывать в интернет-магазине Sneaker World в любое время из дома и пользоваться услугами👕
-"""
-
-order_text = {
-    "en": "Order number {} \n order status {}",
-    "ru": "Номер заказа {} \n Статус заказа {}"
 }
 
 
