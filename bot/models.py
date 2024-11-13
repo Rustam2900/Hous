@@ -89,12 +89,14 @@ class HouseImage(models.Model):
 
 class HouseMeasure(models.Model):
     house = models.ForeignKey(House, on_delete=models.CASCADE, related_name='measures')
-    living_room_area = models.DecimalField(max_digits=10, decimal_places=2)  # Oshxona maydoni (kvadrat metr)
-    bedroom_area = models.DecimalField(max_digits=10, decimal_places=2)  # Yotoq xona maydoni (kvadrat metr)
-    bathroom_count = models.PositiveIntegerField()  # Hojatxonalar soni
-    kitchen_area = models.DecimalField(max_digits=10, decimal_places=2)  # Oshxona maydoni
-    year_built = models.PositiveIntegerField()  # Qurilish yili, bu yerda ham saqlaymiz agar alohida istasangiz
-    total_area = models.DecimalField(max_digits=10, decimal_places=2)  # Umumiy maydon (kvadrat metr)
+    living_room_area = models.DecimalField(max_digits=10, decimal_places=2,
+                                           verbose_name="Oshxona maydoni (kvadrat metr)")
+    bedroom_area = models.DecimalField(max_digits=10, decimal_places=2,
+                                       verbose_name="Yotoq xona maydoni (kvadrat metr)")
+    bathroom_count = models.PositiveIntegerField(verbose_name="Hojatxonalar soni")
+    kitchen_area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Oshxona maydoni")
+    year_built = models.PositiveIntegerField(verbose_name="Qurilish yili")
+    total_area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Umumiy maydon (kvadrat metr)")
 
     def __str__(self):
         return f"{self.house.name} - {self.living_room_area} m²"
