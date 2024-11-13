@@ -345,18 +345,18 @@ async def show_house_details(call: CallbackQuery):
             f"Zipcode: {house.zipcode}\n"
             f"Room: {house.room}\n"
             f"Price: ${house.price}\n\n"
-            f"**Batafsil Ma'lumotlar**\n"
-            f"Oshxona maydoni: {house_measure.living_room_area} m²\n"
-            f"Yotoq xona maydoni: {house_measure.bedroom_area} m²\n"
-            f"Hojatxonalar soni: {house_measure.bathroom_count}\n"
-            f"Oshxona maydoni: {house_measure.kitchen_area} m²\n"
-            f"Qurilish yili: {house_measure.year_built}\n"
-            f"Umumiy maydon: {house_measure.total_area} m²\n\n"
+            f"{default_languages[user_lang]['details']}\n"
+            f"{default_languages[user_lang]['living_room_area']}: {house_measure.living_room_area} m²\n"
+            f"{default_languages[user_lang]['Bedroom_area']}: {house_measure.bedroom_area} m²\n"
+            f"{default_languages[user_lang]['Number_of_toilets']}: {house_measure.bathroom_count}\n"
+            f"{default_languages[user_lang]['Kitchen_area']}: {house_measure.kitchen_area} m²\n"
+            f"{default_languages[user_lang]['year_built']}: {house_measure.year_built}\n"
+            f"{default_languages[user_lang]['total_area']}: {house_measure.total_area} m²\n\n"
         )
 
         house_details_url = f"http://127.0.0.1:8000/house_details/{house.id}"
 
-        house_details += f"**Batafsil URL**: {house_details_url}"
+        house_details += f"{default_languages[user_lang]['more']}: {house_details_url}"
 
         await call.message.answer(house_details)
     except House.DoesNotExist:
