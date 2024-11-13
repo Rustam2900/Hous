@@ -75,14 +75,12 @@ async def company_contact(message: Message, state: FSMContext):
     user_lang = user_languages.get(user_id, 'en')
 
     if message.contact:
-        phone = fix_phone(message.contact.phone_number)
+        phone = message.contact.phone_number
     else:
-        phone = fix_phone(message.text)
+        phone = message.text.strip()
 
     if not phone_number_validator.match(phone):
-        error_message = default_languages[user_lang].get(
-            "enter_number", "error"
-        )
+        error_message = default_languages[user_lang].get("enter_number", "Please enter a valid phone number.")
         await message.answer(error_message)
         return
 
