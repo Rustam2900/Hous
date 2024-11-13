@@ -11,6 +11,9 @@ default_languages = {
                        "Выберите один из языков ниже!",
 
     "en": {
+        "more": "**More URL**",
+        "house_not": "not house",
+        "not": "Information in the wrong format. Please try again.",
         "details": "details",
         "user_not": "User not found. Please register first.",
         "county_user_not": "No houses available in your selected county within your budget.",
@@ -65,6 +68,9 @@ default_languages = {
     },
 
     "ru": {
+        "more": "**Более URL**",
+        "house_not": "не дом",
+        "not": "Информация в неправильном формате. Пожалуйста, попробуйте еще раз.",
         "details": "подробно",
         "user_not": "Пользователь не найден. Пожалуйста, зарегистрируйтесь сначала.",
         "county_user_not": "В выбранном вами округе нет домов, соответствующих вашему бюджету.",

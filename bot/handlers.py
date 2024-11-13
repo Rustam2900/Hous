@@ -307,19 +307,16 @@ async def handle_county_selection(call: CallbackQuery):
                              f"Room: {house.room}\n\n"
                              f"Price: ${house.price}\n\n")
 
-            # Creating inline keyboard with a button to view house details
             inline_kb = InlineKeyboardMarkup(row_width=1, inline_keyboard=[])
 
-            # Here, we include the house.id in the callback_data to retrieve details later
             inline_buttons = [
                 InlineKeyboardButton(
                     text=default_languages[user_lang]['details'] or "no name",
-                    callback_data=f"details_{house.id}"  # Including house.id for details
+                    callback_data=f"details_{house.id}"
                 )
             ]
             inline_kb.inline_keyboard = [inline_buttons[i:i + 1] for i in range(0, len(inline_buttons), 1)]
 
-            # Send the message with house details and inline keyboard
             await call.message.answer(house_details, reply_markup=inline_kb)
     else:
         await call.message.answer(default_languages[user_lang]['county_user_not'])
@@ -327,10 +324,13 @@ async def handle_county_selection(call: CallbackQuery):
 
 @dp.callback_query(lambda call: call.data.startswith("details_"))
 async def show_house_details(call: CallbackQuery):
+    user_id = call.from_user.id
+    user_lang = await get_user_language(user_id)
+
     callback_data = call.data.split("_")
 
     if len(callback_data) < 2 or not callback_data[1].isdigit():
-        await call.message.answer("Noto'g'ri formatdagi ma'lumot. Iltimos, qayta urinib ko'ring.")
+        await call.message.answer(default_languages[user_lang]['not'])
         return
 
     house_id = int(callback_data[1])
@@ -360,6 +360,6 @@ async def show_house_details(call: CallbackQuery):
 
         await call.message.answer(house_details)
     except House.DoesNotExist:
-        await call.message.answer("Uy topilmadi.")
+        await call.message.answer(default_languages[user_lang]['house_not'])
     except HouseMeasure.DoesNotExist:
-        await call.message.answer("Batafsil o'lchamlar mavjud emas.")
+        await call.message.answer("error")
