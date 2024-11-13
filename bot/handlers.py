@@ -8,9 +8,10 @@ from aiogram import Dispatcher, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from asgiref.sync import sync_to_async
+from django.core.exceptions import ValidationError
 
 from bot.keyboards import get_languages, get_main_menu
-from bot.models import User, House
+from bot.models import User, House, HouseMeasure, HouseImage
 from bot.utils import default_languages, introduction_template
 from bot.db import (save_user_language, save_user_info_to_db,
                     get_user_language, state_get, county_get, create_or_update_user_state,
@@ -125,7 +126,7 @@ async def handle_products_by_category(call: CallbackQuery):
         inline_buttons.append(InlineKeyboardButton(text=state_name or "no name", callback_data=f"state_{state.id}"))
 
     inline_kb.inline_keyboard = [inline_buttons[i:i + 3] for i in range(0, len(inline_buttons), 3)]
-    await call.message.edit_text(default_languages[user_lang]['state_'], reply_markup=inline_kb)
+    await call.message.edit_reply_markup(default_languages[user_lang]['state_'], reply_markup=inline_kb)
 
 
 @dp.callback_query(lambda call: call.data.startswith("state_"))
@@ -145,7 +146,7 @@ async def handle_products_by_category(call: CallbackQuery):
             InlineKeyboardButton(text=country_name or "no name", callback_data=f"country_{county.id}"))
 
     inline_kb.inline_keyboard = [inline_buttons[i:i + 2] for i in range(0, len(inline_buttons), 2)]
-    await call.message.edit_text(default_languages[user_lang]['country'], reply_markup=inline_kb)
+    await call.message.edit_reply_markup(default_languages[user_lang]['country'], reply_markup=inline_kb)
     user, created = await create_or_update_user_state(
         telegram_id=user_id,
         state_id=state_id
@@ -194,9 +195,10 @@ async def ask_max_sum(message: Message, state: FSMContext):
 
     try:
         validate_us_zipcode(zipcode)
-    except ValueError as e:
+    except ValidationError as e:
         await message.answer(str(e))
         return
+
     await state.update_data(zipcode=zipcode)
 
     await state.set_state(UserHousStates.min_sum)
@@ -304,6 +306,60 @@ async def handle_county_selection(call: CallbackQuery):
                              f"Zipcode: {house.zipcode}\n\n"
                              f"Room: {house.room}\n\n"
                              f"Price: ${house.price}\n\n")
-            await call.message.answer(house_details)
+
+            # Creating inline keyboard with a button to view house details
+            inline_kb = InlineKeyboardMarkup(row_width=1, inline_keyboard=[])
+
+            # Here, we include the house.id in the callback_data to retrieve details later
+            inline_buttons = [
+                InlineKeyboardButton(
+                    text=default_languages[user_lang]['details'] or "no name",
+                    callback_data=f"details_{house.id}"  # Including house.id for details
+                )
+            ]
+            inline_kb.inline_keyboard = [inline_buttons[i:i + 1] for i in range(0, len(inline_buttons), 1)]
+
+            # Send the message with house details and inline keyboard
+            await call.message.answer(house_details, reply_markup=inline_kb)
     else:
         await call.message.answer(default_languages[user_lang]['county_user_not'])
+
+
+@dp.callback_query(lambda call: call.data.startswith("details_"))
+async def show_house_details(call: CallbackQuery):
+    callback_data = call.data.split("_")
+
+    if len(callback_data) < 2 or not callback_data[1].isdigit():
+        await call.message.answer("Noto'g'ri formatdagi ma'lumot. Iltimos, qayta urinib ko'ring.")
+        return
+
+    house_id = int(callback_data[1])
+
+    try:
+        house = await sync_to_async(House.objects.get)(id=house_id)
+        house_measure = await sync_to_async(HouseMeasure.objects.get)(house=house)
+
+        house_details = (
+            f"House Title: {house.title}\n"
+            f"Description: {house.description}\n"
+            f"Zipcode: {house.zipcode}\n"
+            f"Room: {house.room}\n"
+            f"Price: ${house.price}\n\n"
+            f"**Batafsil Ma'lumotlar**\n"
+            f"Oshxona maydoni: {house_measure.living_room_area} m²\n"
+            f"Yotoq xona maydoni: {house_measure.bedroom_area} m²\n"
+            f"Hojatxonalar soni: {house_measure.bathroom_count}\n"
+            f"Oshxona maydoni: {house_measure.kitchen_area} m²\n"
+            f"Qurilish yili: {house_measure.year_built}\n"
+            f"Umumiy maydon: {house_measure.total_area} m²\n\n"
+        )
+
+        house_details_url = f"http://127.0.0.1:8000/house_details/{house.id}"
+
+        house_details += f"**Batafsil URL**: {house_details_url}"
+
+        await call.message.answer(house_details)
+    except House.DoesNotExist:
+        await call.message.answer("Uy topilmadi.")
+    except HouseMeasure.DoesNotExist:
+        await call.message.answer("Batafsil o'lchamlar mavjud emas.")

@@ -57,7 +57,7 @@ class House(models.Model):
 
     title = models.CharField(_("title"), max_length=100, null=True, blank=True)
     description = models.TextField(_("description"), null=True, blank=True)
-    zipcode = models.FloatField(null=True, blank=True, validators=[validate_us_zipcode])
+    zipcode = models.CharField(null=True, blank=True, validators=[validate_us_zipcode])
     county = models.ForeignKey(County, on_delete=models.CASCADE, related_name="houses")
     price = models.DecimalField(decimal_places=2, max_digits=10)
     room = models.CharField(_("room"), blank=True, null=True, max_length=50)
@@ -99,4 +99,4 @@ class HouseMeasure(models.Model):
     total_area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Umumiy maydon (kvadrat metr)")
 
     def __str__(self):
-        return f"{self.house.name} - {self.living_room_area} m²"
+        return f"{self.living_room_area} m²"

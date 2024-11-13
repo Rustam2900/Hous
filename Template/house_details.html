@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 90%;
+            max-width: 900px;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+        .house-info {
+            margin: 20px 0;
+        }
+
+        .house-info p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .house-info .label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .images-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .image-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .image-item:hover img {
+            transform: scale(1.1);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>{{ house_details.title }}</h1>
+
+    <div class="house-info">
+        <p><span class="label">Description:</span> {{ house_details.description }}</p>
+        <p><span class="label">Zipcode:</span> {{ house_details.zipcode }}</p>
+        <p><span class="label">Room:</span> {{ house_details.room }}</p>
+        <p><span class="label">Price:</span> ${{ house_details.price }}</p>
+        <p><span class="label">Living Room Area:</span> {{ house_details.living_room_area }} m²</p>
+        <p><span class="label">Bedroom Area:</span> {{ house_details.bedroom_area }} m²</p>
+        <p><span class="label">Bathroom Count:</span> {{ house_details.bathroom_count }}</p>
+        <p><span class="label">Kitchen Area:</span> {{ house_details.kitchen_area }} m²</p>
+        <p><span class="label">Year Built:</span> {{ house_details.year_built }}</p>
+        <p><span class="label">Total Area:</span> {{ house_details.total_area }} m²</p>
+    </div>
+
+    <!-- Tasvirlarni ko'rsatish -->
+    <div class="images-container">
+        {% for image in house_details.images %}
+        <div class="image-item">
+            <img src="{{ image.image.url }}" alt="House Image">
+        </div>
+        {% endfor %}
+    </div>
+
+    <button class="button" onclick="window.history.back();">Go Back</button>
+</div>
+
+</body>
+</html>

@@ -11,6 +11,7 @@ default_languages = {
                        "Выберите один из языков ниже!",
 
     "en": {
+        "details": "details",
         "user_not": "User not found. Please register first.",
         "county_user_not": "No houses available in your selected county within your budget.",
         "county_user_update": "No county selected. Please update your profile with a county.",
@@ -64,6 +65,7 @@ default_languages = {
     },
 
     "ru": {
+        "details": "подробно",
         "user_not": "Пользователь не найден. Пожалуйста, зарегистрируйтесь сначала.",
         "county_user_not": "В выбранном вами округе нет домов, соответствующих вашему бюджету.",
         "county_user_update": "Округ не выбран. Пожалуйста, обновите свой профиль, указав округ.",
