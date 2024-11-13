@@ -12,11 +12,13 @@ from asgiref.sync import sync_to_async
 from bot.keyboards import get_languages, get_main_menu
 from bot.models import User, House
 from bot.utils import default_languages, introduction_template
-from bot.db import (save_user_language, save_user_info_to_db, fix_phone,
+from bot.db import (save_user_language, save_user_info_to_db,
                     get_user_language, state_get, county_get, create_or_update_user_state,
                     create_or_update_user_country, save_user_info_to_db_create)
 from bot.utils import user_languages
 from bot.states import UserStates, UserHousStates
+
+from bot.validators import validate_us_zipcode
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -188,12 +190,13 @@ async def ask_min_sum(message: Message, state: FSMContext):
 async def ask_max_sum(message: Message, state: FSMContext):
     user_lang = await get_user_language(message.from_user.id)
     text = default_languages[user_lang]['room_prompt']
-    try:
-        zipcode = int(message.text)
-    except ValueError:
-        await message.answer(text=text)
-        return
+    zipcode = message.text.strip()
 
+    try:
+        validate_us_zipcode(zipcode)
+    except ValueError as e:
+        await message.answer(str(e))
+        return
     await state.update_data(zipcode=zipcode)
 
     await state.set_state(UserHousStates.min_sum)

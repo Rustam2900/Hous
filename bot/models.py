@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from bot.validators import phone_number_validator
+from bot.validators import phone_number_validator, validate_us_zipcode
 
 
 class User(models.Model):
@@ -57,7 +57,7 @@ class House(models.Model):
 
     title = models.CharField(_("title"), max_length=100, null=True, blank=True)
     description = models.TextField(_("description"), null=True, blank=True)
-    zipcode = models.FloatField(null=True, blank=True)
+    zipcode = models.FloatField(null=True, blank=True, validators=[validate_us_zipcode])
     county = models.ForeignKey(County, on_delete=models.CASCADE, related_name="houses")
     price = models.DecimalField(decimal_places=2, max_digits=10)
     room = models.CharField(_("room"), blank=True, null=True, max_length=50)
