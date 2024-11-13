@@ -3,22 +3,20 @@ from bot import models
 
 
 @register(models.User)
-class CustomUserTranslation(TranslationOptions):
+class UserTranslation(TranslationOptions):
     fields = ('full_name', 'username', 'room')
 
 
 @register(models.State)
-class CustomStateTranslation(TranslationOptions):
+class StateTranslation(TranslationOptions):
     fields = ('name',)
 
 
 @register(models.County)
-class CustomCountyTranslation(TranslationOptions):
+class CountyTranslation(TranslationOptions):
     fields = ('name',)
 
 
 @register(models.House)
-class CustomHouseTranslation(TranslationOptions):
+class HouseTranslation(TranslationOptions):
     fields = ('title', 'description', 'type', 'room')
-
-
