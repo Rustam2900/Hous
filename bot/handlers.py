@@ -23,7 +23,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 dp = Dispatcher()
 bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
-phone_number_validator = re.compile(r'^\+998 \d{2} \d{3} \d{2} \d{2}$')
+phone_number_validator = re.compile(r'^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$')
 
 
 @dp.message(CommandStart())
@@ -81,7 +81,7 @@ async def company_contact(message: Message, state: FSMContext):
 
     if not phone_number_validator.match(phone):
         error_message = default_languages[user_lang].get(
-            "enter_number", "Please enter a valid phone number format: +998 XX XXX XX XX"
+            "enter_number", "error"
         )
         await message.answer(error_message)
         return
