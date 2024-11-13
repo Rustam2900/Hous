@@ -35,6 +35,8 @@ class HouseImageInline(admin.TabularInline):
 
 class HouseMeasureInline(admin.TabularInline):
     model = HouseMeasure
+    extra = 1
+    max_num = 3
     fields = ['living_room_area', 'bedroom_area', 'bathroom_count', 'kitchen_area', 'year_built', 'total_area']
 
 
