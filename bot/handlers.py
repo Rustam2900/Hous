@@ -354,7 +354,7 @@ async def show_house_details(call: CallbackQuery):
             f"{default_languages[user_lang]['total_area']}: {house_measure.total_area} m²\n\n"
         )
 
-        house_details_url = f"http://127.0.0.1:8000/house_details/{house.id}"
+        house_details_url = f'<a href="http://127.0.0.1:8000/house_details/{house.id}">Linc</a>'
 
         house_details += f"{default_languages[user_lang]['more']}: {house_details_url}"
 
