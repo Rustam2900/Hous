@@ -10,6 +10,8 @@ from aiogram.types import Message, CallbackQuery
 from asgiref.sync import sync_to_async
 from django.core.exceptions import ValidationError
 
+from telegraph import Telegraph
+
 from bot.keyboards import get_languages, get_main_menu
 from bot.models import User, House, HouseMeasure, HouseImage
 from bot.utils import default_languages, introduction_template
@@ -27,6 +29,9 @@ dp = Dispatcher()
 bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 phone_number_validator = re.compile(r'^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$')
+
+telegraph = Telegraph()
+telegraph.create_account(short_name='SamItGlobalHousBot')  # o'zingizning bot nomingizni kiriting
 
 
 @dp.message(CommandStart())
@@ -336,9 +341,12 @@ async def show_house_details(call: CallbackQuery):
     house_id = int(callback_data[1])
 
     try:
+        # Fetching the House, HouseMeasure, and HouseImage asynchronously
         house = await sync_to_async(House.objects.get)(id=house_id)
         house_measure = await sync_to_async(HouseMeasure.objects.get)(house=house)
+        house_images = await sync_to_async(HouseImage.objects.filter)(house=house)
 
+        # Constructing house details
         house_details = (
             f"House Title: {house.title}\n"
             f"Description: {house.description}\n"
@@ -354,11 +362,46 @@ async def show_house_details(call: CallbackQuery):
             f"{default_languages[user_lang]['total_area']}: {house_measure.total_area} m²\n\n"
         )
 
-        house_details_url = f'<a href="http://127.0.0.1:8000/house_details/{house.id}">Linc</a>'
+        # Building HTML for images
+        image_html = ""
+        for image in house_images:
+            image_html += f'<img src="{image.image.url}" alt="Image for {house.title}" style="max-width: 100%; height: auto; margin-bottom: 10px;"><br>'
 
+        # Create the Telegraph page
+        telegraph_response = telegraph.create_page(
+            title=f"{house.title} - Details",
+            html_content=f"""
+                <strong>Description:</strong><br>
+                <p>{house.description}</p><br>
+                <strong>House Details:</strong><br>
+                <ul>
+                    <li><strong>Zipcode:</strong> {house.zipcode}</li>
+                    <li><strong>Room:</strong> {house.room}</li>
+                    <li><strong>Price:</strong> {house.price}</li>
+                    <li><strong>Living Room Area:</strong> {house_measure.living_room_area} m²</li>
+                    <li><strong>Bedroom Area:</strong> {house_measure.bedroom_area} m²</li>
+                    <li><strong>Bathroom Count:</strong> {house_measure.bathroom_count}</li>
+                    <li><strong>Kitchen Area:</strong> {house_measure.kitchen_area} m²</li>
+                    <li><strong>Year Built:</strong> {house_measure.year_built}</li>
+                    <li><strong>Total Area:</strong> {house_measure.total_area} m²</li>
+                </ul>
+                <strong>House Images:</strong><br>
+                {image_html}  <!-- Add image HTML content here -->
+            """,
+            author_name="Rustam",
+            author_url="https://t.me/Jumanazarov_Rustam",
+            return_content=False
+        )
+
+        # URL of the created page
+        house_details_url = f"https://telegra.ph/{telegraph_response['path']}"
+
+        # Append the URL to house details
         house_details += f"{default_languages[user_lang]['more']}: {house_details_url}"
 
+        # Send the message with house details
         await call.message.answer(house_details)
+
     except House.DoesNotExist:
         await call.message.answer(default_languages[user_lang]['house_not'])
     except HouseMeasure.DoesNotExist:
