@@ -1,4 +1,4 @@
-from bot.models import User, State, County
+from bot.models import User, State, County, HouseImage
 from asgiref.sync import sync_to_async
 from django.db import IntegrityError
 
@@ -115,6 +115,11 @@ def create_or_update_user_country(telegram_id, county_id):
 @sync_to_async
 def get_users():
     return list(User.objects.all())
+
+
+@sync_to_async
+def get_house_image(house):
+    return list(HouseImage.objects.filter(house_id=house))
 
 
 async def send_houses_to_users():

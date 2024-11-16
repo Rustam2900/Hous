@@ -9,6 +9,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from asgiref.sync import sync_to_async
 from django.core.exceptions import ValidationError
+from django.db.models import QuerySet
 
 from telegraph import Telegraph
 
@@ -17,7 +18,7 @@ from bot.models import User, House, HouseMeasure, HouseImage
 from bot.utils import default_languages, introduction_template
 from bot.db import (save_user_language, save_user_info_to_db,
                     get_user_language, state_get, county_get, create_or_update_user_state,
-                    create_or_update_user_country, save_user_info_to_db_create)
+                    create_or_update_user_country, save_user_info_to_db_create, get_house_image)
 from bot.utils import user_languages
 from bot.states import UserStates, UserHousStates
 
@@ -341,68 +342,62 @@ async def show_house_details(call: CallbackQuery):
     house_id = int(callback_data[1])
 
     try:
-        # Fetching the House, HouseMeasure, and HouseImage asynchronously
         house = await sync_to_async(House.objects.get)(id=house_id)
         house_measure = await sync_to_async(HouseMeasure.objects.get)(house=house)
-        house_images = await sync_to_async(HouseImage.objects.filter)(house=house)
+        print("@@@@@@@@##########", house_measure)
+        house_images_query = await get_house_image(house=house_id)
 
-        # Constructing house details
+        print("############", list(house_images_query))
         house_details = (
-            f"House Title: {house.title}\n"
-            f"Description: {house.description}\n"
-            f"Zipcode: {house.zipcode}\n"
-            f"Room: {house.room}\n"
-            f"Price: ${house.price}\n\n"
+            f"🏠 <b>{house.title}</b>\n\n"
+            f"📜 {house.description}\n"
+            f"📍 {default_languages[user_lang]['zipcode']}: {house.zipcode}\n"
+            f"🚪 {default_languages[user_lang]['room']}: {house.room}\n"
+            f"💵 {default_languages[user_lang]['price']}: ${house.price}\n\n"
             f"{default_languages[user_lang]['details']}\n"
             f"{default_languages[user_lang]['living_room_area']}: {house_measure.living_room_area} m²\n"
-            f"{default_languages[user_lang]['Bedroom_area']}: {house_measure.bedroom_area} m²\n"
-            f"{default_languages[user_lang]['Number_of_toilets']}: {house_measure.bathroom_count}\n"
-            f"{default_languages[user_lang]['Kitchen_area']}: {house_measure.kitchen_area} m²\n"
+            f"{default_languages[user_lang]['bedroom_area']}: {house_measure.bedroom_area} m²\n"
+            f"{default_languages[user_lang]['number_of_toilets']}: {house_measure.bathroom_count}\n"
+            f"{default_languages[user_lang]['kitchen_area']}: {house_measure.kitchen_area} m²\n"
             f"{default_languages[user_lang]['year_built']}: {house_measure.year_built}\n"
-            f"{default_languages[user_lang]['total_area']}: {house_measure.total_area} m²\n\n"
+            f"{default_languages[user_lang]['total_area']}: {house_measure.total_area} m²\n"
         )
 
-        # Building HTML for images
-        image_html = ""
-        for image in house_images:
-            image_html += f'<img src="{image.image.url}" alt="Image for {house.title}" style="max-width: 100%; height: auto; margin-bottom: 10px;"><br>'
+        for image in house_images_query:
+            image_url = f"{settings.MEDIA_URL}{image.image}"
+            await call.message.answer_photo(photo=image_url, caption=f"{house.title}")
+        # print("###################", image_url)
+        telegraph_content = f"""
+            <strong>Description:</strong><br>{house.description}<br>
+            <strong>Details:</strong><br>
+            <ul>
+                <li><strong>Zipcode:</strong> {house.zipcode}</li>
+                <li><strong>Room:</strong> {house.room}</li>
+                <li><strong>Price:</strong> ${house.price}</li>
+                <li><strong>Living Room Area:</strong> {house_measure.living_room_area} m²</li>
+                <li><strong>Bedroom Area:</strong> {house_measure.bedroom_area} m²</li>
+                <li><strong>Bathroom Count:</strong> {house_measure.bathroom_count}</li>
+                <li><strong>Kitchen Area:</strong> {house_measure.kitchen_area} m²</li>
+                <li><strong>Year Built:</strong> {house_measure.year_built}</li>
+                <li><strong>Total Area:</strong> {house_measure.total_area} m²</li>
+            </ul>
+        """
 
-        # Create the Telegraph page
         telegraph_response = telegraph.create_page(
             title=f"{house.title} - Details",
-            html_content=f"""
-                <strong>Description:</strong><br>
-                <p>{house.description}</p><br>
-                <strong>House Details:</strong><br>
-                <ul>
-                    <li><strong>Zipcode:</strong> {house.zipcode}</li>
-                    <li><strong>Room:</strong> {house.room}</li>
-                    <li><strong>Price:</strong> {house.price}</li>
-                    <li><strong>Living Room Area:</strong> {house_measure.living_room_area} m²</li>
-                    <li><strong>Bedroom Area:</strong> {house_measure.bedroom_area} m²</li>
-                    <li><strong>Bathroom Count:</strong> {house_measure.bathroom_count}</li>
-                    <li><strong>Kitchen Area:</strong> {house_measure.kitchen_area} m²</li>
-                    <li><strong>Year Built:</strong> {house_measure.year_built}</li>
-                    <li><strong>Total Area:</strong> {house_measure.total_area} m²</li>
-                </ul>
-                <strong>House Images:</strong><br>
-                {image_html}  <!-- Add image HTML content here -->
-            """,
+            html_content=telegraph_content,
             author_name="Rustam",
-            author_url="https://t.me/Jumanazarov_Rustam",
-            return_content=False
+            author_url="https://t.me/Jumanazarov_Rustam"
         )
 
-        # URL of the created page
-        house_details_url = f"https://telegra.ph/{telegraph_response['path']}"
+        house_details += f"\n🔗 {default_languages[user_lang]['more']}: https://telegra.ph/{telegraph_response['path']}"
 
-        # Append the URL to house details
-        house_details += f"{default_languages[user_lang]['more']}: {house_details_url}"
-
-        # Send the message with house details
-        await call.message.answer(house_details)
+        await call.message.answer(house_details, parse_mode="HTML")
 
     except House.DoesNotExist:
         await call.message.answer(default_languages[user_lang]['house_not'])
     except HouseMeasure.DoesNotExist:
-        await call.message.answer("error")
+        await call.message.answer(default_languages[user_lang]['measure_not'])
+    except Exception as e:
+        print(f"Error: {e}")
+        await call.message.answer('error')
