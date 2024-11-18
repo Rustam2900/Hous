@@ -334,40 +334,35 @@ async def show_house_details(call: CallbackQuery):
     user_lang = await get_user_language(user_id)
 
     callback_data = call.data.split("_")
-
     if len(callback_data) < 2 or not callback_data[1].isdigit():
         await call.message.answer(default_languages[user_lang]['not'])
         return
 
     house_id = int(callback_data[1])
+    print("######################### House ID", house_id)
 
-    try:
-        house = await sync_to_async(House.objects.get)(id=house_id)
-        house_measure = await sync_to_async(HouseMeasure.objects.get)(house=house)
-        print("@@@@@@@@##########", house_measure)
-        house_images_query = await get_house_image(house=house_id)
+    house = await sync_to_async(House.objects.get)(id=house_id)
+    house_measure = await sync_to_async(HouseMeasure.objects.get)(house=house)
 
-        print("############", list(house_images_query))
-        house_details = (
-            f"🏠 <b>{house.title}</b>\n\n"
-            f"📜 {house.description}\n"
-            f"📍 {default_languages[user_lang]['zipcode']}: {house.zipcode}\n"
-            f"🚪 {default_languages[user_lang]['room']}: {house.room}\n"
-            f"💵 {default_languages[user_lang]['price']}: ${house.price}\n\n"
-            f"{default_languages[user_lang]['details']}\n"
-            f"{default_languages[user_lang]['living_room_area']}: {house_measure.living_room_area} m²\n"
-            f"{default_languages[user_lang]['bedroom_area']}: {house_measure.bedroom_area} m²\n"
-            f"{default_languages[user_lang]['number_of_toilets']}: {house_measure.bathroom_count}\n"
-            f"{default_languages[user_lang]['kitchen_area']}: {house_measure.kitchen_area} m²\n"
-            f"{default_languages[user_lang]['year_built']}: {house_measure.year_built}\n"
-            f"{default_languages[user_lang]['total_area']}: {house_measure.total_area} m²\n"
-        )
+    print("############### House", house)
+    print("############### House measure ", house_measure)
 
-        for image in house_images_query:
-            image_url = f"{settings.MEDIA_URL}{image.image}"
-            await call.message.answer_photo(photo=image_url, caption=f"{house.title}")
-        # print("###################", image_url)
-        telegraph_content = f"""
+    house_details = (
+        f"🏠 <b>{house.title}</b>\n\n"
+        f"📜 {house.description}\n"
+        f"📍 {default_languages[user_lang]['zipcode']}: {house.zipcode}\n"
+        f"🚪 {default_languages[user_lang]['room']}: {house.room}\n"
+        f"💵 {default_languages[user_lang]['price']}: ${house.price}\n\n"
+        f"{default_languages[user_lang]['details']}\n"
+        f"{default_languages[user_lang]['living_room_area']}: {house_measure.living_room_area} m²\n"
+        f"{default_languages[user_lang]['bedroom_area']}: {house_measure.bedroom_area} m²\n"
+        f"{default_languages[user_lang]['number_of_toilets']}: {house_measure.bathroom_count}\n"
+        f"{default_languages[user_lang]['kitchen_area']}: {house_measure.kitchen_area} m²\n"
+        f"{default_languages[user_lang]['year_built']}: {house_measure.year_built}\n"
+        f"{default_languages[user_lang]['total_area']}: {house_measure.total_area} m²\n"
+    )
+    print("#########################", house_details)
+    telegraph_content = f"""
             <strong>Description:</strong><br>{house.description}<br>
             <strong>Details:</strong><br>
             <ul>
@@ -383,21 +378,13 @@ async def show_house_details(call: CallbackQuery):
             </ul>
         """
 
-        telegraph_response = telegraph.create_page(
-            title=f"{house.title} - Details",
-            html_content=telegraph_content,
-            author_name="Rustam",
-            author_url="https://t.me/Jumanazarov_Rustam"
-        )
+    telegraph_response = telegraph.create_page(
+        title=f"{house.title} - Details",
+        html_content=telegraph_content,
+        author_name="Rustam",
+        author_url="https://t.me/Jumanazarov_Rustam"
+    )
 
-        house_details += f"\n🔗 {default_languages[user_lang]['more']}: https://telegra.ph/{telegraph_response['path']}"
+    house_details += f"\n🔗 {default_languages[user_lang]['more']}: https://telegra.ph/{telegraph_response['path']}"
 
-        await call.message.answer(house_details, parse_mode="HTML")
-
-    except House.DoesNotExist:
-        await call.message.answer(default_languages[user_lang]['house_not'])
-    except HouseMeasure.DoesNotExist:
-        await call.message.answer(default_languages[user_lang]['measure_not'])
-    except Exception as e:
-        print(f"Error: {e}")
-        await call.message.answer('error')
+    await call.message.answer(house_details, parse_mode="HTML")

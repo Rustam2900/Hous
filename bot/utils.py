@@ -11,12 +11,13 @@ default_languages = {
                        "Выберите один из языков ниже!",
 
     "en": {
+        "room": "room",
         "year_built": "year_built",
         "total_area": "total_area",
-        "Kitchen_area": "Kitchen area",
-        "Number_of_toilets": "Number of toilets",
-        "Bedroom_area": "Bedroom area",
-        "living_room_area": "гостиная_комната_площадь",
+        "kitchen_area": "Kitchen area",
+        "number_of_toilets": "Number of toilets",
+        "bedroom_area": "Bedroom area",
+        "living_room_area": "living room room area",
         "more": "**More URL**",
         "house_not": "not house",
         "not": "Information in the wrong format. Please try again.",
@@ -74,11 +75,12 @@ default_languages = {
     },
 
     "ru": {
+        "room": "комната",
         "total_area": "общая_площадь",
         "year_built": "год_постройки",
-        "Kitchen_area": "Кухонная зона",
-        "Number_of_toilets": "Количество туалетов",
-        "Bedroom_area": "Спальня",
+        "kitchen_area": "Кухонная зона",
+        "number_of_toilets": "Количество туалетов",
+        "bedroom_area": "Спальня",
         "living_room_area": "гостиная_комната_площадь",
         "more": "**Более URL**",
         "house_not": "не дом",
