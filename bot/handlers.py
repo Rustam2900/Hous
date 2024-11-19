@@ -344,7 +344,7 @@ async def show_house_details(call: CallbackQuery):
 
     house = await sync_to_async(House.objects.get)(id=house_id)
     house_measure = await sync_to_async(HouseMeasure.objects.get)(house=house)
-    house_images = await sync_to_async(list)(HouseImage.objects.filter(house=house))
+    # house_images = await sync_to_async(list)(HouseImage.objects.filter(house=house))
 
     print("############### House", house)
     print("############### House measure ", house_measure)
