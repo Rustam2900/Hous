@@ -344,13 +344,19 @@ async def show_house_details(call: CallbackQuery):
 
     house = await sync_to_async(House.objects.get)(id=house_id)
     house_measure = await sync_to_async(HouseMeasure.objects.get)(house=house)
-    # house_images = await sync_to_async(list)(HouseImage.objects.filter(house=house))
+    house_images = await sync_to_async(list)(HouseImage.objects.filter(house=house))
 
-    print("############### House", house)
-    print("############### House measure ", house_measure)
-    # for image in house_images:
-    #     image_url = urljoin(settings.MEDIA_URL, image.image.url)
-    #     print("############ House Image ", image_url)
+    urls = "http://127.0.0.1:8000/"
+    image_urls = []
+    for image in house_images:
+        image_url = urljoin(urls + settings.MEDIA_URL, image.image.url)
+        image_urls.append(image_url)
+        print("############ House Image URL ", image_url)
+
+    images_html = ""
+    for url in image_urls:
+        images_html += f'<img src="{url}" alt="House Image" style="width: 5%; max-width: 50px;">\n'
+
     house_details = (
         f"🏠 <b>{house.title}</b>\n\n"
         f"📜 {house.description}\n"
@@ -380,6 +386,11 @@ async def show_house_details(call: CallbackQuery):
                 <li><strong>Year Built:</strong> {house_measure.year_built}</li>
                 <li><strong>Total Area:</strong> {house_measure.total_area} m²</li>
             </ul>
+             {images_html}  <!-- Rasmlar -->
+           
+    
+            
+    
         """
 
     telegraph_response = telegraph.create_page(
