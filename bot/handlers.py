@@ -386,11 +386,7 @@ async def show_house_details(call: CallbackQuery):
                 <li><strong>Year Built:</strong> {house_measure.year_built}</li>
                 <li><strong>Total Area:</strong> {house_measure.total_area} m²</li>
             </ul>
-             {images_html}  <!-- Rasmlar -->
-           
-    
-            
-    
+                      
         """
 
     telegraph_response = telegraph.create_page(
